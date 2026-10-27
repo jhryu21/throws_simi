@@ -5,7 +5,7 @@ from __future__ import annotations
 from dash import dash_table, html
 
 from aspire_dash.theme import FONT_FAMILY, SLATE
-from throws import format_date
+from throws import format_date, repository
 from throws.metrics import SEGMENTS
 
 from .figures import SEGMENT_COLORS
@@ -113,8 +113,6 @@ def compare_labels(metas) -> list[str]:
 
 def trial_options() -> list[dict]:
     """Dropdown options for stored trials, newest session first."""
-    from throws import repository
-
     metas = sorted(repository.list_metas(), key=lambda m: (m.date, m.throw_label, m.key),
                    reverse=True)
     return [{"label": trial_label(m), "value": m.key} for m in metas]

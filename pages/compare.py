@@ -59,7 +59,8 @@ def update_compare(keys):
         return card(empty_state("fa-solid fa-code-compare", "Select trials to compare"))
 
     trials = [repository.load_trial(k) for k in keys]
-    summary = pd.DataFrame([trial_summary(t) for t in trials])
+    phases = [phase_table(t) for t in trials]
+    summary = pd.DataFrame([trial_summary(t, ph) for t, ph in zip(trials, phases)])
     labels = compare_labels([t.meta for t in trials])
     summary["label"] = labels
     summary["date"] = summary["date"].map(format_date)
@@ -81,20 +82,11 @@ def update_compare(keys):
             "fontSize": "12px", "color": SLATE["400"], "marginTop": "8px"}),
     ])
 
-    phase_rows = []
-    for t, label in zip(trials, summary["label"]):
-        ph = phase_table(t)
-        row = {"label": label}
-        for name, _, _ in PHASES:
-            sel = ph[ph["phase"] == name].iloc[0]
-            row[f"{name}::dur"] = sel["duration"]
-            row[f"{name}::dv"] = sel["speed_change"]
-        phase_rows.append(row)
-    phase_df = pd.DataFrame(phase_rows)
+    # Per-phase duration / speed change are already in the summary as dur::<phase> / dv::<phase>
     phase_cols = [("label", "Trial", None)]
     for name, _, _ in PHASES:
         short = name.replace("Toe-off ", "TO").replace("Touchdown ", "TD").replace(" to ", "→")
-        phase_cols += [(f"{name}::dur", f"{short} (s)", ".3f"), (f"{name}::dv", f"{short} Δv", ".2f")]
+        phase_cols += [(f"dur::{name}", f"{short} (s)", ".3f"), (f"dv::{name}", f"{short} Δv", ".2f")]
 
     return html.Div([
         section_title("Release parameters", "fa-solid fa-gauge-high"),
@@ -103,11 +95,10 @@ def update_compare(keys):
         html.Div([
             graph_card(figures.compare_speed(trials, labels), title="Speed aligned at release",
                        config=GRAPH_CONFIG),
-            graph_card(figures.phase_timeline([(lbl, phase_table(t)) for t, lbl in
-                                               zip(trials, summary["label"])]),
+            graph_card(figures.phase_timeline(list(zip(labels, phases))),
                        title="Phase timeline", config=GRAPH_CONFIG),
         ], style=GRID_2),
-        card([data_table(phase_df, phase_cols)]),
+        card([data_table(summary, phase_cols)]),
     ])
 
 

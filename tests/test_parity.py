@@ -10,7 +10,11 @@ from throws import Trial, phase_table, release_params
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 REPORT = os.path.join(ROOT, "Ibrahim_20250514.xlsx")
+SAMPLE = os.path.join(ROOT, "Ibrahim_517.txt")
 TXT_DIRS = [ROOT, os.path.join(ROOT, "data", "raw")]
+
+# Athlete sample files are git-ignored, so tests needing them skip in a fresh clone
+needs_sample = pytest.mark.skipif(not os.path.exists(SAMPLE), reason="sample Ibrahim_517.txt not present")
 
 
 def _find_txt(sheet_name):
@@ -48,8 +52,9 @@ def test_matches_excel_report(sheet_name):
     np.testing.assert_allclose(got_phases, expected_phases, rtol=1e-9, atol=1e-12)
 
 
+@needs_sample
 def test_release_angle_is_position_tangent_at_release_minus_one():
-    trial = Trial.from_source(os.path.join(ROOT, "Ibrahim_517.txt"))
+    trial = Trial.from_source(SAMPLE)
     d, r = trial.data, trial.release_idx - 1
     expected = np.degrees(np.arctan2(d["vt"].iat[r + 1] - d["vt"].iat[r - 1],
                                      d["ap"].iat[r + 1] - d["ap"].iat[r - 1]))
@@ -57,8 +62,9 @@ def test_release_angle_is_position_tangent_at_release_minus_one():
     assert release_params(trial)["angle"] == pytest.approx(41.0277, abs=1e-3)
 
 
+@needs_sample
 def test_sampling_rate_and_events():
-    trial = Trial.from_source(os.path.join(ROOT, "Ibrahim_517.txt"))
+    trial = Trial.from_source(SAMPLE)
     assert trial.fs == 160
     assert trial.implement == "Discus"
     assert list(trial.event_idx) == [0, 75, 146, 156, 210, 241]

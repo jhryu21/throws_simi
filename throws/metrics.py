@@ -117,10 +117,14 @@ def event_snapshot_table(trial: Trial) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-def trial_summary(trial: Trial) -> dict:
-    """Flat dict of key metrics for cross-trial comparison."""
+def trial_summary(trial: Trial, phases: pd.DataFrame | None = None) -> dict:
+    """Flat dict of key metrics for cross-trial comparison.
+
+    ``phases`` may be passed when the caller already has the phase table.
+    """
     rel = release_params(trial)
-    phases = phase_table(trial)
+    if phases is None:
+        phases = phase_table(trial)
     summary = {
         "key": trial.meta.key,
         "athlete": trial.meta.display_name,
@@ -135,7 +139,7 @@ def trial_summary(trial: Trial) -> dict:
         "peak_speed_before_release": float(trial.data["speed"].iloc[: trial.release_idx].max()),
         "total_time": float(phases["duration"].sum()),
     }
-    for _, row in phases.iterrows():
-        summary[f"dur::{row['phase']}"] = row["duration"]
-        summary[f"dv::{row['phase']}"] = row["speed_change"]
+    for row in phases.itertuples():
+        summary[f"dur::{row.phase}"] = row.duration
+        summary[f"dv::{row.phase}"] = row.speed_change
     return summary

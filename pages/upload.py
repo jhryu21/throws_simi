@@ -1,6 +1,7 @@
 """Upload Simi exports and manage trial metadata."""
 
 import base64
+from dataclasses import replace
 
 import dash
 import pandas as pd
@@ -228,17 +229,23 @@ def on_save(_, store, athlete, discipline, date, throw_label, distance, notes, v
     prevent_initial_call=True,
 )
 def on_meta_action(_, __, rows, selected):
+    # Rows come from the browser: only keys of stored trials are acted on
+    stored = {m.key: m for m in repository.list_metas()}
+
     if dash.ctx.triggered_id == "up-meta-delete":
-        keys = [rows[i]["key"] for i in (selected or [])]
+        keys = [rows[i]["key"] for i in (selected or []) if rows[i].get("key") in stored]
         if not keys:
             return "Select rows to delete.", dash.no_update, dash.no_update, dash.no_update
-        for key in keys:
-            repository.delete_trial(key)
+        repository.delete_trials(keys)
         return f"Deleted {len(keys)} trial(s).", _meta_table_data(), [], _athlete_options()
 
     no_athlete = bad_video = 0
+    changed = []
     for row in rows:
-        meta = repository.get_meta(row["key"])
+        old = stored.get(row.get("key"))
+        if old is None:
+            continue
+        meta = replace(old)
         for f in META_FIELDS:
             value = row.get(f)
             if f == "distance":
@@ -248,8 +255,9 @@ def on_meta_action(_, __, rows, selected):
                 if f == "date":
                     value = parse_date(value)
             setattr(meta, f, value)
-        stored_video = repository.get_meta(row["key"]).video
-        if meta.video and meta.video != stored_video:
+        if meta == old:
+            continue
+        if meta.video and meta.video != old.video:
             # Only new or changed links are resolved (short links need a network call)
             meta.video = resolve_video_link(meta.video) or ""
             if not meta.video:
@@ -258,7 +266,8 @@ def on_meta_action(_, __, rows, selected):
         if not meta.athlete:
             no_athlete += 1
         else:
-            repository.update_meta(meta)
+            changed.append(meta)
+    repository.update_metas(changed)
     skipped = [f"{n} row(s) {why}" for n, why in [(no_athlete, "without athlete"),
                                                   (bad_video, "with an invalid video link")] if n]
     status = f"Saved; skipped {', '.join(skipped)}." if skipped else "Metadata saved."
