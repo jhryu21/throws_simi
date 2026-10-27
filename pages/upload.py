@@ -212,7 +212,7 @@ def on_save(_, store, athlete, discipline, date, throw_label, distance, notes, v
                      distance=float(distance) if distance not in (None, "") else None, notes=notes or "",
                      video=video)
     key = repository.save_trial(base64.b64decode(store["content"]), meta)
-    link = dcc.Link("open report", href=f"/?trial={key}")
+    link = dcc.Link("open report", href=dash.get_relative_path(f"/?trial={key}"))
     return (html.Span(["Saved ", html.Strong(trial_label(meta)), " — ", link], style={"color": "#16a34a"}),
             _meta_table_data(), _athlete_options())
 

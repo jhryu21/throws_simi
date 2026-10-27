@@ -203,7 +203,8 @@ def sidebar(
         nav_children.append(
             dcc.Link(
                 [icon_el, item["label"]],
-                href=item["href"],
+                # Prefixed so links work under Posit Connect's /content/<guid>/ path
+                href=dash.get_relative_path(item["href"]),
                 className="sidebar-link",
             )
         )
@@ -582,8 +583,10 @@ def loading_overlay(children, color: str = "#004185", overlay_opacity: float = 0
 
 # ── Print Header/Footer ─────────────────────────────────────────────────────
 
-def print_header(title="", subtitle="", logo_src="/assets/aspire-logo.png"):
+def print_header(title="", subtitle="", logo_src=None):
     """Header shown only when printing — hidden on screen."""
+    # Resolved at call time so the logo path carries the Posit Connect prefix
+    logo_src = logo_src or dash.get_relative_path("/assets/aspire-logo.png")
     return html.Div([
         html.Div([
             html.Img(src=logo_src, style={"height": "24px"}),
