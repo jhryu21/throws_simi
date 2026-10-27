@@ -1,0 +1,4 @@
+# Development / test tools (not needed on Posit Connect)
+# Install with: pip install -i https://mirror.kakao.com/pypi/simple -r requirements-dev.txt
+-r requirements.txt
+pytest>=8.0
