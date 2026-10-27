@@ -1,0 +1,23 @@
+/* Throws dashboard additions on top of the Aspire base styles */
+
+@media print {
+    /* Overrides the landscape page set in 01_aspire_print.css */
+    @page { size: A4 portrait; margin: 10mm; }
+
+    .no-print { display: none !important; }
+
+    /* Page wrappers set padding and a grey background inline */
+    .page-content { padding: 0 !important; }
+    html, body, .app-container, .main-area { background: white !important; }
+    .print-page-break { break-before: page; page-break-before: always; }
+
+    /* Lay the trial report out at its screen width (1100px) and scale it to the
+       A4 printable width (190mm ~ 718px), so the square 2x2 charts and the KPI
+       row keep their on-screen proportions instead of reflowing. */
+    .trial-page {
+        width: 1100px !important;
+        max-width: none !important;
+        zoom: 0.64;  /* 1100px x 0.64 = 704px, just inside 718px */
+    }
+    .trial-page .section-title { margin-top: 4px !important; }
+}

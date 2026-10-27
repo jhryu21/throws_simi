@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+
+# Virtual environments
+.venv/
+venv/
+
+# Secrets / local settings
+.env
+.env.*
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Uploaded trials (athlete data); recreated automatically by the app
+data/
+
+# Generated reports
+*_report.xlsx
+Ibrahim_20250514.xlsx
+Ibrahim_517.txt
+Aspire Discus Throw Report_20250514_Ibrahim Hamdan.pdf
