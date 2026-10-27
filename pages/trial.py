@@ -55,7 +55,7 @@ def _render(trial):
         summary_card("Horz. velocity", fmt(rel["v_horizontal"], 2, " m/s"),
                      icon="fa-solid fa-arrow-right"),
         summary_card("Release height", fmt(rel["height"], 2, " m"), icon="fa-solid fa-ruler-vertical"),
-        summary_card("TO1 → Release", fmt(phases["duration"].sum(), 3, " s"), icon="fa-solid fa-stopwatch"),
+        summary_card("TO1 → Release", fmt(phases["duration"].sum(), 2, " s"), icon="fa-solid fa-stopwatch"),
     ], style=KPI_GRID)
 
     trajectories = html.Div([
@@ -73,10 +73,11 @@ def _render(trial):
         card([
             data_table(phases, [
                 ("phase", "Phase", None),
-                ("duration", "Duration (s)", ".3f"),
+                ("events", "Events", None),
+                ("duration", "Duration (s)", ".2f"),
                 ("duration_pct", "Share (%)", ".1f"),
                 ("speed_change", "Δ Speed (m/s)", ".2f"),
-                ("cumulative", "Cumulative (s)", ".3f"),
+                ("cumulative", "Cumulative (s)", ".2f"),
             ]),
         ]),
         graph_card(figures.phase_timeline([(m.short_label, phases)]), title="Phase timeline",
@@ -107,7 +108,7 @@ def _render(trial):
         # velocity and video stay screen-only
         html.Div([section_title("Support phases", "fa-solid fa-shoe-prints"), phase_section],
                  className="print-page-break"),
-        html.Div([section_title("Velocity", "fa-solid fa-wind"), extra], className="no-print"),
+        html.Div([section_title("Velocity and 3D Path", "fa-solid fa-cube"), extra], className="no-print"),
         *_video_section(m.video),
     ])
 

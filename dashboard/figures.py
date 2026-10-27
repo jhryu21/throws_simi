@@ -8,25 +8,19 @@ import plotly.graph_objects as go
 from aspire_dash import charts  # noqa: F401  (registers the "aspire" template)
 from aspire_dash.theme import SLATE
 from throws import EVENT_NAMES, PHASES, Trial
-from throws.metrics import SEGMENTS, segment_bounds
+from throws.metrics import EVENT_ABBR, SEGMENTS, segment_bounds
 
 # Fixed phase colours (validated for CVD + normal vision, light and dark).
 SEGMENT_COLORS = {
-    "Double Support 1": "#1876ab",
-    "Left Support": "#16a34a",
+    "Double Support": "#1876ab",
+    "Entry": "#16a34a",
     "Flight": "#7c3aed",
-    "Right Support": "#d97706",
+    "Transition": "#d97706",
     "Delivery": "#db2777",
     "Post-release": SLATE["400"],
 }
-# Support phases in the table map onto the plotting segments
-PHASE_COLORS = {
-    PHASES[0][0]: SEGMENT_COLORS["Left Support"],
-    PHASES[1][0]: SEGMENT_COLORS["Flight"],
-    PHASES[2][0]: SEGMENT_COLORS["Right Support"],
-    PHASES[3][0]: SEGMENT_COLORS["Delivery"],
-}
-EVENT_ABBR = ["Start", "TO1", "TO2", "TD1", "TD2", "REL"]
+# Support phases share their names (and colours) with the plotting segments
+PHASE_COLORS = {name: SEGMENT_COLORS[name] for name, _, _ in PHASES}
 # Label placement for TO1..REL; TO2 and TD1 are only a few frames apart
 EVENT_TEXT_POS = ["top center", "top left", "top right", "top center", "top center"]
 EVENT_XANCHOR = ["center", "right", "left", "center", "center"]
@@ -70,7 +64,7 @@ def _event_markers(fig, x, y, trial: Trial, hover_extra=None, **trace_kwargs):
         textfont=dict(size=11, color=SLATE["600"]),
         marker=dict(size=MARKER_SIZE, color=SLATE["800"], line=dict(width=2, color="white")),
         customdata=np.column_stack([EVENT_NAMES[1:], t[idx], speed[idx]]),
-        hovertemplate="<b>%{customdata[0]}</b><br>t = %{customdata[1]:.3f} s"
+        hovertemplate="<b>%{customdata[0]}</b><br>t = %{customdata[1]:.2f} s"
                       "<br>speed = %{customdata[2]:.2f} m/s<extra></extra>",
         showlegend=False,
         **trace_kwargs,
@@ -91,7 +85,7 @@ def trajectory_view(trial: Trial, x_axis: str, y_axis: str, height: int = 460) -
             line=dict(color=SEGMENT_COLORS[label], width=LINE_WIDTH,
                       dash="dot" if label == "Post-release" else "solid"),
             customdata=np.column_stack([t[sl], speed[sl]]),
-            hovertemplate=f"<b>{label}</b><br>t = %{{customdata[0]:.3f}} s"
+            hovertemplate=f"<b>{label}</b><br>t = %{{customdata[0]:.2f}} s"
                           "<br>speed = %{customdata[1]:.2f} m/s<extra></extra>",
         ))
     _event_markers(fig, x, y, trial)
@@ -125,7 +119,7 @@ def speed_time(trial: Trial, height: int = 460) -> go.Figure:
         fig.add_trace(go.Scatter(
             x=t[sl], y=speed[sl], mode="lines", name=label,
             line=dict(color=SEGMENT_COLORS[label], width=LINE_WIDTH),
-            hovertemplate=f"<b>{label}</b><br>t = %{{x:.3f}} s<br>speed = %{{y:.2f}} m/s<extra></extra>",
+            hovertemplate=f"<b>{label}</b><br>t = %{{x:.2f}} s<br>speed = %{{y:.2f}} m/s<extra></extra>",
         ))
     _event_markers(fig, t, speed, trial)
 
@@ -180,7 +174,7 @@ def trajectory_3d(trial: Trial, height: int = 440) -> go.Figure:
             mode="lines", name=label,
             line=dict(color=SEGMENT_COLORS[label], width=6),
             customdata=np.column_stack([t[sl], speed[sl]]),
-            hovertemplate=f"<b>{label}</b><br>t = %{{customdata[0]:.3f}} s"
+            hovertemplate=f"<b>{label}</b><br>t = %{{customdata[0]:.2f}} s"
                           "<br>speed = %{customdata[1]:.2f} m/s<extra></extra>",
         ))
     idx = trial.event_idx[1:]
@@ -223,9 +217,9 @@ def phase_timeline(phases_by_trial: list[tuple[str, "object"]], height: int | No
         fig.add_trace(go.Bar(
             y=labels, x=durations, orientation="h", name=phase,
             marker=dict(color=PHASE_COLORS[phase], line=dict(color="white", width=2)),
-            texttemplate="%{x:.3f}s", textposition="inside",
+            texttemplate="%{x:.2f}s", textposition="inside",
             insidetextanchor="middle", textfont=dict(color="white", size=11),
-            hovertemplate=f"<b>{phase}</b><br>%{{y}}: %{{x:.3f}} s<extra></extra>",
+            hovertemplate=f"<b>{phase}</b><br>%{{y}}: %{{x:.2f}} s<extra></extra>",
         ))
     height = height or 48 * len(labels) + 150
     _base_layout(fig, height, barmode="stack", showlegend=True,

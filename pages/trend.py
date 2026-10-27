@@ -20,8 +20,8 @@ METRICS = {
     "release_v_vertical": "Vertical release velocity (m/s)",
     "release_v_horizontal": "Horizontal release velocity (m/s)",
     "total_time": "TO1 → Release time (s)",
-    "dur::Touchdown 2 to Release": "TD2 → Release time (s)",
-    "dv::Touchdown 2 to Release": "TD2 → Release speed gain (m/s)",
+    "dur::Delivery": "Delivery time (s)",
+    "dv::Delivery": "Delivery speed gain (m/s)",
     "distance": "Distance (m)",
 }
 
@@ -76,7 +76,7 @@ def update_trend(athlete, metric):
             ("release_speed", "Speed (m/s)", ".2f"),
             ("release_angle", "Angle (°)", ".1f"),
             ("release_height", "Height (m)", ".2f"),
-            ("total_time", "TO1→REL (s)", ".3f"),
-            ("dur::Touchdown 2 to Release", "TD2→REL (s)", ".3f"),
+            ("total_time", "TO1→REL (s)", ".2f"),
+            ("dur::Delivery", "Delivery (s)", ".2f"),
         ], sort_action="native")]),
     ])

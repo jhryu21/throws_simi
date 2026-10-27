@@ -12,23 +12,22 @@ import pandas as pd
 from .models import Trial
 
 EVENT_NAMES = ["Start", "Toe-off 1", "Toe-off 2", "Touchdown 1", "Touchdown 2", "Release"]
+EVENT_ABBR = ["Start", "TO1", "TO2", "TD1", "TD2", "REL"]
 
 # Support phases reported in the table: (label, start event, end event)
 PHASES = [
-    ("Toe-off 1 to Toe-off 2", 1, 2),
-    ("Toe-off 2 to Touchdown 1", 2, 3),
-    ("Touchdown 1 to Touchdown 2", 3, 4),
-    ("Touchdown 2 to Release", 4, 5),
+    ("Entry", 1, 2),
+    ("Flight", 2, 3),
+    ("Transition", 3, 4),
+    ("Delivery", 4, 5),
 ]
 
 # Trajectory segments used for colouring plots: (label, start event, end event).
+# The four support phases plus the lead-in and a short post-release tail;
 # ``None`` as end means "release + POST_RELEASE_FRAMES".
 SEGMENTS = [
-    ("Double Support 1", 0, 1),
-    ("Left Support", 1, 2),
-    ("Flight", 2, 3),
-    ("Right Support", 3, 4),
-    ("Delivery", 4, 5),
+    ("Double Support", 0, 1),
+    *PHASES,
     ("Post-release", 5, None),
 ]
 POST_RELEASE_FRAMES = 5
@@ -84,6 +83,7 @@ def phase_table(trial: Trial) -> pd.DataFrame:
         path = np.linalg.norm(np.diff(pos[i0:i1 + 1], axis=0), axis=1).sum()
         rows.append({
             "phase": label,
+            "events": f"{EVENT_ABBR[s]} → {EVENT_ABBR[e]}",
             "duration": (i1 - i0) / trial.fs,
             "speed_start": speed[i0],
             "speed_end": speed[i1],

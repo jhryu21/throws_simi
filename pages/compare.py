@@ -76,7 +76,7 @@ def update_compare(keys):
             ("release_v_horizontal", "V horz (m/s)", ".2f"),
             ("release_height", "Height (m)", ".2f"),
             ("peak_speed_before_release", "Peak speed (m/s)", ".2f"),
-            ("total_time", "TO1→REL (s)", ".3f"),
+            ("total_time", "TO1→REL (s)", ".2f"),
         ], highlight_row=best),
         html.Div("Highlighted row: highest release speed", style={
             "fontSize": "12px", "color": SLATE["400"], "marginTop": "8px"}),
@@ -85,8 +85,7 @@ def update_compare(keys):
     # Per-phase duration / speed change are already in the summary as dur::<phase> / dv::<phase>
     phase_cols = [("label", "Trial", None)]
     for name, _, _ in PHASES:
-        short = name.replace("Toe-off ", "TO").replace("Touchdown ", "TD").replace(" to ", "→")
-        phase_cols += [(f"dur::{name}", f"{short} (s)", ".3f"), (f"dv::{name}", f"{short} Δv", ".2f")]
+        phase_cols += [(f"dur::{name}", f"{name} (s)", ".2f"), (f"dv::{name}", f"{name} Δv", ".2f")]
 
     return html.Div([
         section_title("Release parameters", "fa-solid fa-gauge-high"),

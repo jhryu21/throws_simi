@@ -32,7 +32,8 @@ app.layout = page_layout(
         nav_items=nav,
         logo_src=dash.get_relative_path("/assets/aspire-logo.png"),
     ),
-    header_el=header(title="Throws Analysis", subtitle="Implement trajectory · Simi Motion"),
+    header_el=header(title="Throws Analysis",
+                     subtitle="Discus, Shot Put & Hammer · 3D implement kinematics"),
     use_pages=True,
 )
 
