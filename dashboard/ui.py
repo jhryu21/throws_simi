@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from dash import dash_table, html
+from dash import dash_table, dcc, html
 
 from aspire_dash.theme import FONT_FAMILY, SLATE
-from throws import format_date, repository
+from throws import DISCIPLINES, format_date, repository
 from throws.metrics import SEGMENTS
 
 from .figures import SEGMENT_COLORS
@@ -91,7 +91,7 @@ def data_table(df, columns, table_id=None, highlight_row=None, **kwargs):
 
 
 def trial_label(meta) -> str:
-    parts = [meta.display_name, format_date(meta.date) or None,
+    parts = [meta.display_name, meta.discipline or None, format_date(meta.date) or None,
              f"#{meta.throw_label}" if meta.throw_label else None]
     return " · ".join(p for p in parts if p)
 
@@ -111,10 +111,25 @@ def compare_labels(metas) -> list[str]:
     return labels
 
 
-def trial_options() -> list[dict]:
+def filter_event(metas, event: str | None) -> list:
+    """Trials of one event (by stored discipline); all trials when ``event`` is empty."""
+    return [m for m in metas if m.discipline == event] if event else list(metas)
+
+
+def event_filter(dropdown_id: str, value: str | None = None):
+    """Event dropdown listing the disciplines that have stored trials; cleared = all events."""
+    present = {m.discipline for m in repository.list_metas()}
+    return html.Div([
+        html.Label("Event", className="control-label"),
+        dcc.Dropdown(id=dropdown_id, options=[d for d in DISCIPLINES if d in present], value=value,
+                     placeholder="All events", style={"minWidth": "160px"}),
+    ])
+
+
+def trial_options(event: str | None = None) -> list[dict]:
     """Dropdown options for stored trials, newest session first."""
-    metas = sorted(repository.list_metas(), key=lambda m: (m.date, m.throw_label, m.key),
-                   reverse=True)
+    metas = sorted(filter_event(repository.list_metas(), event),
+                   key=lambda m: (m.date, m.throw_label, m.key), reverse=True)
     return [{"label": trial_label(m), "value": m.key} for m in metas]
 
 

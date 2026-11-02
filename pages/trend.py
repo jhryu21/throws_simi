@@ -2,12 +2,12 @@
 
 import dash
 import pandas as pd
-from dash import Input, Output, callback, dcc, html
+from dash import Input, Output, State, callback, dcc, html
 
 from aspire_dash.charts import GRAPH_CONFIG
 from aspire_dash.components import card, empty_state, filter_bar, graph_card, info_box
 from dashboard import figures
-from dashboard.ui import data_table, section_title
+from dashboard.ui import data_table, event_filter, filter_event, section_title
 from throws import format_date, repository, slugify
 from throws.metrics import trial_summary
 
@@ -26,11 +26,16 @@ METRICS = {
 }
 
 
-def layout(**kwargs):
+def _athlete_options(event=None):
     # Options are keyed by the name slug so spelling/case variants group together
-    options = [{"label": name, "value": slugify(name)} for name in repository.list_athletes()]
+    return [{"label": name, "value": slugify(name)} for name in repository.list_athletes(event)]
+
+
+def layout(**kwargs):
+    options = _athlete_options()
     return html.Div([
         filter_bar([
+            event_filter("trend-event"),
             html.Div([
                 html.Label("Athlete", className="control-label"),
                 dcc.Dropdown(id="trend-athlete", options=options,
@@ -48,11 +53,32 @@ def layout(**kwargs):
     ], style={"maxWidth": "1400px"})
 
 
-@callback(Output("trend-content", "children"), Input("trend-athlete", "value"), Input("trend-metric", "value"))
-def update_trend(athlete, metric):
+@callback(
+    Output("trend-athlete", "options"),
+    Output("trend-athlete", "value"),
+    Input("trend-event", "value"),
+    State("trend-athlete", "value"),
+    prevent_initial_call=True,
+)
+def filter_athletes(event, current):
+    options = _athlete_options(event)
+    slugs = [o["value"] for o in options]
+    return options, current if current in slugs else (slugs[0] if slugs else None)
+
+
+@callback(
+    Output("trend-content", "children"),
+    Input("trend-athlete", "value"),
+    Input("trend-metric", "value"),
+    Input("trend-event", "value"),
+)
+def update_trend(athlete, metric, event):
     if not athlete:
         return card(empty_state("fa-solid fa-chart-line", "No athletes yet"))
-    trials = [repository.load_trial(m.key) for m in repository.list_metas() if slugify(m.athlete) == athlete]
+    metas = filter_event(repository.list_metas(), event)
+    trials = [repository.load_trial(m.key) for m in metas if slugify(m.athlete) == athlete]
+    if not trials:
+        return card(empty_state("fa-solid fa-chart-line", "No trials for this athlete and event"))
     df = pd.DataFrame([trial_summary(t) for t in trials]).sort_values(["date", "throw_label"])
     # Sorted on ISO dates above; shown as DD/MM/YYYY from here on
     df["date"] = df["date"].map(format_date).replace("", "No date")

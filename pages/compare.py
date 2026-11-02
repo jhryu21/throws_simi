@@ -2,13 +2,14 @@
 
 import dash
 import pandas as pd
-from dash import Input, Output, State, callback, dcc, html
+from dash import Input, Output, State, callback, ctx, dcc, html
 
 from aspire_dash.charts import GRAPH_CONFIG
 from aspire_dash.components import card, empty_state, filter_bar, graph_card
 from aspire_dash.theme import SLATE
 from dashboard import figures
-from dashboard.ui import GRID_2, compare_labels, data_table, section_title, trial_options
+from dashboard.ui import (GRID_2, compare_labels, data_table, event_filter, filter_event,
+                          section_title, trial_options)
 from throws import PHASES, format_date, phase_table, repository
 from throws.export import report_workbook
 from throws.metrics import trial_summary
@@ -18,8 +19,8 @@ dash.register_page(__name__, path="/compare", title="Session Compare", name="Ses
 MAX_TRIALS = len(figures.TRIAL_COLORS)
 
 
-def _default_selection():
-    metas = repository.list_metas()
+def _default_selection(event=None):
+    metas = filter_event(repository.list_metas(), event)
     if not metas:
         return []
     latest = max(m.date for m in metas)
@@ -30,6 +31,7 @@ def _default_selection():
 def layout(**kwargs):
     return html.Div([
         filter_bar([
+            event_filter("cmp-event"),
             html.Div([
                 html.Label(f"Trials (max {MAX_TRIALS})", className="control-label"),
                 dcc.Dropdown(id="cmp-select", options=trial_options(), value=_default_selection(),
@@ -45,11 +47,23 @@ def layout(**kwargs):
     ], style={"maxWidth": "1400px"})
 
 
-@callback(Output("cmp-select", "value"), Input("cmp-select", "value"), prevent_initial_call=True)
-def limit_selection(keys):
+@callback(
+    Output("cmp-select", "options"),
+    Output("cmp-select", "value"),
+    Input("cmp-event", "value"),
+    Input("cmp-select", "value"),
+    prevent_initial_call=True,
+)
+def update_selection(event, keys):
+    if ctx.triggered_id == "cmp-event":
+        options = trial_options(event)
+        allowed = {o["value"] for o in options}
+        # Keep trials that match the new event; otherwise fall back to its latest session
+        kept = [k for k in keys or [] if k in allowed]
+        return options, kept or _default_selection(event)
     if keys and len(keys) > MAX_TRIALS:
-        return keys[:MAX_TRIALS]
-    return dash.no_update
+        return dash.no_update, keys[:MAX_TRIALS]
+    return dash.no_update, dash.no_update
 
 
 @callback(Output("cmp-content", "children"), Input("cmp-select", "value"))

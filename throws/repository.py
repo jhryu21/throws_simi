@@ -66,10 +66,12 @@ def list_metas() -> list[TrialMeta]:
     return [_meta_from(k, all_meta.get(k, {})) for k in list_trial_keys()]
 
 
-def list_athletes() -> list[str]:
-    """Distinct stored athlete names, one spelling per name key."""
+def list_athletes(discipline: str | None = None) -> list[str]:
+    """Distinct stored athlete names, one spelling per name key; optionally one event only."""
     names = {}
     for m in list_metas():
+        if discipline and m.discipline != discipline:
+            continue
         names.setdefault(slugify(m.athlete), m.athlete)
     return sorted(names.values(), key=str.lower)
 
