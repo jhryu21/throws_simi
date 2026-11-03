@@ -4,7 +4,7 @@
 "$schema" = "https://cdn.posit.co/publisher/schemas/posit-publishing-schema-v3.json"
 type = "python-dash"
 entrypoint = "app.py"
-title = "Throw_3D"
+title = "Throw Analysis"
 files = [
     "/app.py",
     "/requirements.txt",
@@ -13,8 +13,9 @@ files = [
     "/throws",
     "/aspire_dash",
     "/assets",
-    "/.posit/publish/Throw_3D-CB17.toml",
-    "/.posit/publish/deployments/deployment-GQIK.toml",
+    "/.posit/publish/Throw Analysis-U206.toml",
+    "/.posit/publish/deployments/deployment-TVGO.toml",
+    "/data",
 ]
 validate = true
 product_type = "connect"

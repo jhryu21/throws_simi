@@ -3,19 +3,19 @@
 server_type = "connect"
 server_url = "https://posit.aspire.qa"
 client_version = "2.12.0"
-created_at = "2026-10-27T11:08:21.192Z"
+created_at = "2026-11-02T08:30:11.348Z"
 type = "python-dash"
-configuration_name = "Throw_3D-CB17"
-id = "f6551d32-018d-42ef-8443-8e67febca70d"
-dashboard_url = "https://posit.aspire.qa/connect/#/apps/f6551d32-018d-42ef-8443-8e67febca70d"
-direct_url = "https://posit.aspire.qa/content/f6551d32-018d-42ef-8443-8e67febca70d/"
-logs_url = "https://posit.aspire.qa/connect/#/apps/f6551d32-018d-42ef-8443-8e67febca70d/logs"
-deployed_at = "2026-10-27T11:10:47.284Z"
-bundle_id = "4142"
-bundle_url = "https://posit.aspire.qa/__api__/v1/content/f6551d32-018d-42ef-8443-8e67febca70d/bundles/4142/download"
+configuration_name = "Throw Analysis-U206"
+id = "02643176-5534-40e2-abcc-e24f3c95de60"
+dashboard_url = "https://posit.aspire.qa/connect/#/apps/02643176-5534-40e2-abcc-e24f3c95de60"
+direct_url = "https://posit.aspire.qa/content/02643176-5534-40e2-abcc-e24f3c95de60/"
+logs_url = "https://posit.aspire.qa/connect/#/apps/02643176-5534-40e2-abcc-e24f3c95de60/logs"
+deployed_at = "2026-11-03T06:17:42.160Z"
+bundle_id = "4276"
+bundle_url = "https://posit.aspire.qa/__api__/v1/content/02643176-5534-40e2-abcc-e24f3c95de60/bundles/4276/download"
 files = [
-    ".posit/publish/Throw_3D-CB17.toml",
-    ".posit/publish/deployments/deployment-GQIK.toml",
+    ".posit/publish/Throw Analysis-U206.toml",
+    ".posit/publish/deployments/deployment-TVGO.toml",
     "app.py",
     "aspire_dash/__init__.py",
     "aspire_dash/__main__.py",
@@ -43,6 +43,14 @@ files = [
     "dashboard/figures.py",
     "dashboard/ui.py",
     "dashboard/video.py",
+    "data/meta.json",
+    "data/raw/20261027-105621-080c.txt",
+    "data/raw/20261027-110632-c62a.txt",
+    "data/raw/20261027-110706-343a.txt",
+    "data/raw/20261027-112831-317a.txt",
+    "data/raw/20261102-103311-3deb.txt",
+    "data/raw/20261102-155702-8bd2.txt",
+    "data/raw/20261103-090102-7d44.txt",
     "pages/compare.py",
     "pages/trend.py",
     "pages/trial.py",
@@ -72,7 +80,7 @@ requirements = [
 "$schema" = "https://cdn.posit.co/publisher/schemas/posit-publishing-schema-v3.json"
 type = "python-dash"
 entrypoint = "app.py"
-title = "Throw_3D"
+title = "Throw Analysis"
 files = [
     "/app.py",
     "/requirements.txt",
@@ -81,8 +89,9 @@ files = [
     "/throws",
     "/aspire_dash",
     "/assets",
-    "/.posit/publish/Throw_3D-CB17.toml",
-    "/.posit/publish/deployments/deployment-GQIK.toml",
+    "/.posit/publish/Throw Analysis-U206.toml",
+    "/.posit/publish/deployments/deployment-TVGO.toml",
+    "/data",
 ]
 validate = true
 product_type = "connect"
