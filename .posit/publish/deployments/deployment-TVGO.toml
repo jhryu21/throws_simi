@@ -10,9 +10,9 @@ id = "02643176-5534-40e2-abcc-e24f3c95de60"
 dashboard_url = "https://posit.aspire.qa/connect/#/apps/02643176-5534-40e2-abcc-e24f3c95de60"
 direct_url = "https://posit.aspire.qa/content/02643176-5534-40e2-abcc-e24f3c95de60/"
 logs_url = "https://posit.aspire.qa/connect/#/apps/02643176-5534-40e2-abcc-e24f3c95de60/logs"
-deployed_at = "2026-11-03T06:17:42.160Z"
-bundle_id = "4276"
-bundle_url = "https://posit.aspire.qa/__api__/v1/content/02643176-5534-40e2-abcc-e24f3c95de60/bundles/4276/download"
+deployed_at = "2026-11-08T06:20:11.118Z"
+bundle_id = "4449"
+bundle_url = "https://posit.aspire.qa/__api__/v1/content/02643176-5534-40e2-abcc-e24f3c95de60/bundles/4449/download"
 files = [
     ".posit/publish/Throw Analysis-U206.toml",
     ".posit/publish/deployments/deployment-TVGO.toml",
@@ -51,6 +51,11 @@ files = [
     "data/raw/20261102-103311-3deb.txt",
     "data/raw/20261102-155702-8bd2.txt",
     "data/raw/20261103-090102-7d44.txt",
+    "data/raw/20261103-111040-787d.txt",
+    "data/raw/20261103-150131-f881.txt",
+    "data/raw/20261104-082035-acc9.txt",
+    "data/raw/20261108-083339-e9c7.txt",
+    "data/raw/20261108-091345-08ae.txt",
     "pages/compare.py",
     "pages/trend.py",
     "pages/trial.py",
